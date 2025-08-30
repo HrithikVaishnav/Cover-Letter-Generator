@@ -1,0 +1,27 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: #1e1e2f; /* fallback */
+}
+
+.animated-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle, rgba(255,255,255,0.05) 2%, transparent 3%);
+  background-size: 60px 60px;
+  animation: move-bg 12s linear infinite;
+  z-index: 0;
+}
+
+@keyframes move-bg {
+  from { background-position: 0 0; }
+  to   { background-position: 120px 120px; }
+}
+
+.main-content {
+  position: relative;
+  z-index: 1;
+}
