@@ -8,7 +8,7 @@ app = FastAPI(title="AI Cover Letter Generator")
 # Allow frontend (React) access
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Restrict in prod
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
