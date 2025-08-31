@@ -2,8 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from routes import resume, cover_letter
+from middlewares import log_and_rate_limit
 
 app = FastAPI(title="AI Cover Letter Generator")
+
+# Register middleware
+app.middleware("http")(log_and_rate_limit)
 
 # Allow frontend (React) access
 app.add_middleware(
