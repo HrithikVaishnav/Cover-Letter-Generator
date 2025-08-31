@@ -47,26 +47,40 @@ export default function HomePage() {
 
   const handleGenerate = async () => {
     if (!resumeFile || !jobDescription) {
-      setSnackbar({ open: true, message: "Please upload a resume and paste the job description.", severity: "warning" });
+      setSnackbar({
+        open: true,
+        message: "Please upload a resume and paste the job description.",
+        severity: "warning",
+      });
       return;
     }
-
+  
+    // 🚨 Frontend validation for job description length (min 20 words)
+    if (jobDescription.trim().split(/\s+/).length < 20) {
+      setSnackbar({
+        open: true,
+        message: "Job description must be at least 20 words.",
+        severity: "error",
+      });
+      return;
+    }
+  
     try {
       setLoading(true);
       setCoverLetter(""); // hide previous result
       requestAnimationFrame(() => smoothScrollTo(resultRef.current));
-
+  
       const formData = new FormData();
       formData.append("file", resumeFile);
-
+  
       const resumeResp = await axios.post(
         `${API_BASE_URL}/resume/upload`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
-
+  
       const resumeText = resumeResp.data.resume_text;
-
+  
       const coverResp = await axios.post(
         `${API_BASE_URL}/cover-letter/generate`,
         {
@@ -75,18 +89,27 @@ export default function HomePage() {
           word_limit: wordLimit,
         }
       );
-
+  
       setCoverLetter(coverResp.data.cover_letter);
-      setSnackbar({ open: true, message: "Cover letter generated successfully!", severity: "success" });
-
+      setSnackbar({
+        open: true,
+        message: "Cover letter generated successfully!",
+        severity: "success",
+      });
+  
       requestAnimationFrame(() => smoothScrollTo(resultRef.current));
     } catch (error) {
       console.error(error);
-      setSnackbar({ open: true, message: "Error generating cover letter. Please check backend logs.", severity: "error" });
+      setSnackbar({
+        open: true,
+        message: "Error generating cover letter. Please check backend logs.",
+        severity: "error",
+      });
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <>
