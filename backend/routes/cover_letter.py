@@ -1,3 +1,5 @@
+import json
+import os
 from fastapi import APIRouter
 from schemas.cover_letter_schema import CoverLetterRequest, CoverLetterResponse
 from services.openai_service import generate_cover_letter_
@@ -15,7 +17,7 @@ async def generate_cover_letter(request: CoverLetterRequest):
 
     # Assuming your data.json looks like: {"cover_letter": "...."}
     cover_letter = generate_cover_letter_(
-        request.resume_text, request.job_description
+        request.resume_text, request.job_description, request.word_limit
     )
     return CoverLetterResponse(cover_letter=cover_letter)
     # return CoverLetterResponse(cover_letter=data.get("cover_letter", ""))

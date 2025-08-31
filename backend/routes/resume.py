@@ -13,5 +13,4 @@ async def upload_resume(file: UploadFile):
     else:
         return {"error": "Only PDF or DOCX supported"}
     
-    print(text)
     return ResumeResponse(resume_text=text)
