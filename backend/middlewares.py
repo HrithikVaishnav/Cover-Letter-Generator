@@ -13,7 +13,7 @@ async def log_and_rate_limit(request: Request, call_next):
 
     # Rate limiting → 5 requests per IP per 1 hour
     window = 60 * 60
-    limit = 5
+    limit = 20
     requests = [t for t in user_requests[client_ip] if now - t < window]
     user_requests[client_ip] = requests
 
