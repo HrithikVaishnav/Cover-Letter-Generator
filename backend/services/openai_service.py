@@ -57,7 +57,7 @@ def generate_cover_letter_(resume_text: str, job_description: str, word_limit: i
 
     # ---- Groq API call ----
     response = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
         max_tokens=word_limit * 4,  # buffer (approx 4 tokens per word)
