@@ -28,7 +28,7 @@ export default function HomePage() {
   const [jobDescription, setJobDescription] = useState("");
   const [coverLetter, setCoverLetter] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [userName, setUserName] = useState("");
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
   const [wordLimit, setWordLimit] = useState(250); // default value
 
@@ -91,6 +91,7 @@ export default function HomePage() {
       );
   
       setCoverLetter(coverResp.data.cover_letter);
+      setUserName(coverResp.data.user_name);
       setSnackbar({
         open: true,
         message: "Cover letter generated successfully!",
@@ -198,7 +199,7 @@ export default function HomePage() {
             >
               <Card sx={{ borderRadius: 5 }}>
                 <CardContent>
-                  <CoverLetterOutput coverLetter={coverLetter} />
+                  <CoverLetterOutput coverLetter={coverLetter} userName={userName}/>
                 </CardContent>
               </Card>
             </motion.div>

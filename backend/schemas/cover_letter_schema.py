@@ -8,3 +8,4 @@ class CoverLetterRequest(BaseModel):
 
 class CoverLetterResponse(BaseModel):
     cover_letter: str
+    user_name: str

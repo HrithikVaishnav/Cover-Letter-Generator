@@ -1,5 +1,6 @@
 import os
 import re
+from utils.constants import JD_KEYWORD
 from groq import Groq
 from dotenv import load_dotenv
 
@@ -20,10 +21,10 @@ def generate_cover_letter_(resume_text: str, job_description: str, word_limit: i
     if not job_description or len(job_description.split()) < 20:
         raise ValueError("Job description is too short or missing.")
 
-    # Very basic keyword check
-    job_keywords = ["experience", "responsibilities", "skills", "requirements", "role"]
-    if not any(kw in job_description.lower() for kw in job_keywords):
+
+    if not any(kw in job_description.lower() for kw in JD_KEYWORD):
         raise ValueError("Provided job description seems invalid or irrelevant.")
+
 
     # ---- Prompt construction ----
     prompt = f"""
