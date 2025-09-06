@@ -1,3 +1,4 @@
+// src/pages/HomePage.jsx
 import {
   Grid,
   Card,
@@ -9,6 +10,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  TextField,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { useState, useRef } from "react";
@@ -19,7 +21,6 @@ import JobDescriptionInput from "../components/JobDescriptionInput";
 import CommonButton from "../components/CommonButton";
 import CoverLetterOutput from "../components/CoverLetterOutput";
 import CustomSnackbar from "../components/CustomSnackbar";
-
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -54,8 +55,8 @@ export default function HomePage() {
       });
       return;
     }
-  
-    // 🚨 Frontend validation for job description length (min 20 words)
+
+    // Frontend validation for job description length (min 20 words)
     if (jobDescription.trim().split(/\s+/).length < 20) {
       setSnackbar({
         open: true,
@@ -64,23 +65,25 @@ export default function HomePage() {
       });
       return;
     }
-  
+
     try {
       setLoading(true);
-      setCoverLetter(""); // hide previous result
+      setCoverLetter(""); // hide previous result while generating
+      // scroll to result area
       requestAnimationFrame(() => smoothScrollTo(resultRef.current));
-  
+
+      // upload resume file
       const formData = new FormData();
       formData.append("file", resumeFile);
-  
+
       const resumeResp = await axios.post(
         `${API_BASE_URL}/resume/upload`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
-  
+
       const resumeText = resumeResp.data.resume_text;
-  
+
       const coverResp = await axios.post(
         `${API_BASE_URL}/cover-letter/generate`,
         {
@@ -89,15 +92,21 @@ export default function HomePage() {
           word_limit: wordLimit,
         }
       );
-  
+
+      // set generated cover letter
       setCoverLetter(coverResp.data.cover_letter);
-      setUserName(coverResp.data.user_name);
+
+      // set userName from backend if provided (but user can edit below)
+      // fall back to empty string if backend didn't provide one
+      setUserName(coverResp.data.user_name || "");
+
       setSnackbar({
         open: true,
         message: "Cover letter generated successfully!",
         severity: "success",
       });
-  
+
+      // ensure we scroll to the result now that it's visible
       requestAnimationFrame(() => smoothScrollTo(resultRef.current));
     } catch (error) {
       console.error(error);
@@ -110,7 +119,6 @@ export default function HomePage() {
       setLoading(false);
     }
   };
-  
 
   return (
     <>
@@ -199,7 +207,20 @@ export default function HomePage() {
             >
               <Card sx={{ borderRadius: 5 }}>
                 <CardContent>
-                  <CoverLetterOutput coverLetter={coverLetter} userName={userName}/>
+                  {/* Show an editable name input so the user can correct backend-detected name */}
+                  <Box sx={{ ml: 2, mb: 2, display: "flex", gap: 4, alignItems: "center", flexWrap: "wrap" }}>
+                    <TextField
+                      label="Name (edit if incorrect)"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      size="small"
+                      sx={{ minWidth: 220, flex: "0 1 320px" }}
+                      placeholder="e.g. John Doe"
+                    />
+                  </Box>
+
+                  {/* Cover letter output component (passes userName through) */}
+                  <CoverLetterOutput coverLetter={coverLetter} userName={userName} />
                 </CardContent>
               </Card>
             </motion.div>
