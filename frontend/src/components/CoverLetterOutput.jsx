@@ -1,13 +1,19 @@
+// components/CoverLetterOutput.jsx
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, Typography, Box, Button, Stack, TextField } from "@mui/material";
-import React, { useState } from "react";
 import CustomSnackbar from "./CustomSnackbar";
+import DownloadModal from "./DownloadModal";
 
-export default function CoverLetterOutput({ coverLetter }) {
+/**
+ * If you have a logged-in user's name, pass it as userName prop:
+ * <CoverLetterOutput coverLetter={text} userName={currentUser?.fullName} />
+ */
+export default function CoverLetterOutput({ coverLetter, userName }) {
   const [editableText, setEditableText] = useState(coverLetter || "");
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
+  const [modalOpen, setModalOpen] = useState(false);
 
-  // Sync prop updates into editable state
-  React.useEffect(() => {
+  useEffect(() => {
     setEditableText(coverLetter || "");
   }, [coverLetter]);
 
@@ -17,19 +23,8 @@ export default function CoverLetterOutput({ coverLetter }) {
       setSnackbar({ open: true, message: "Copied to clipboard!", severity: "success" });
     } catch (err) {
       console.error("Failed to copy:", err);
+      setSnackbar({ open: true, message: "Copy failed", severity: "error" });
     }
-  };
-
-  const handleDownload = () => {
-    const blob = new Blob([editableText], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "cover_letter.txt";
-    link.click();
-
-    URL.revokeObjectURL(url);
   };
 
   return (
@@ -40,7 +35,6 @@ export default function CoverLetterOutput({ coverLetter }) {
             Generated Cover Letter
           </Typography>
 
-          {/* Editable Cover Letter */}
           <TextField
             multiline
             fullWidth
@@ -51,31 +45,35 @@ export default function CoverLetterOutput({ coverLetter }) {
             sx={{
               backgroundColor: "background.paper",
               borderRadius: "8px",
-              "& .MuiOutlinedInput-root": {
-                alignItems: "flex-start",
-              },
+              "& .MuiOutlinedInput-root": { alignItems: "flex-start" },
             }}
           />
 
-          {/* Action Buttons */}
           <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
             <Button variant="contained" color="secondary" onClick={handleCopy}>
               Copy
             </Button>
-            <Button variant="contained" color="success" onClick={handleDownload}>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => setModalOpen(true)}
+              disabled={!editableText || editableText.trim().length === 0}
+            >
               Download
             </Button>
           </Stack>
         </CardContent>
       </Card>
 
-      {/* Snackbar */}
       <CustomSnackbar
         open={snackbar.open}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
         severity={snackbar.severity}
         message={snackbar.message}
       />
+
+      {/* pass userName prop if available, otherwise modal will fallback to John Doe */}
+      <DownloadModal open={modalOpen} onClose={() => setModalOpen(false)} content={editableText} userName={userName} />
     </Box>
   );
 }
